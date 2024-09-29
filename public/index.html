@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="front_styles.css">
+    <title>Chat with me</title>
+</head>
+<body>
+
+    <div class="container">
+        <div class="logo-container">
+            <img src="logo.png" alt="Logo" class="logo">
+        </div>
+
+        <div class="box-container">
+            <h1>Chat with me</h1>
+            <input type="text" id="name" placeholder="Enter your name">
+            <button id="enter_button" disabled>Enter</button>
+        </div>
+    </div>
+
+    <script>
+        const enterButton = document.getElementById('enter_button');
+        const nameInput = document.getElementById('name');
+
+        // Enable button if input has text, disable if empty
+        nameInput.addEventListener('input', function() {
+            if (nameInput.value.trim() !== "") {
+                enterButton.disabled = false;
+                enterButton.classList.remove('disabled');
+            } else {
+                enterButton.disabled = true;
+                enterButton.classList.add('disabled');
+            }
+        });
+
+        // Handle button click event
+        enterButton.addEventListener('click', function() {
+            const name = nameInput.value.trim();
+            if (name) {
+                localStorage.setItem('userName', name);
+                // Navigate to the chat page with the name value
+                window.location.href = 'chat.html';  // Assuming font.html is the next page
+            }
+        });
+
+        // Allow pressing 'Enter' to trigger the button
+        nameInput.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' && !enterButton.disabled) {
+                enterButton.click();
+            }
+        });
+    </script>
+
+</body>
+</html>

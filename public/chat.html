@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&display=swap" rel="stylesheet">
+    <title>Chat</title>
+</head>
+<body>
+    <h1>Chat with me</h1>
+
+    <div id="chat-container">
+        <div id="messages"></div>
+        <div class="input-container">
+            <input type="text" id="message" placeholder="Enter Message"/>
+            <button id="sendbtn" disabled>Send</button>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const sendButton = document.getElementById('sendbtn');
+        const messageInput = document.getElementById('message');
+        const allMessages = document.getElementById('messages');
+        const userName = localStorage.getItem('userName');  // Get username from local storage
+
+        // Enable send button when message is typed
+        messageInput.addEventListener('input', function() {
+            if (messageInput.value.trim() !== "") {
+                sendButton.disabled = false;
+                sendButton.classList.remove('disabled');
+            } else {
+                sendButton.disabled = true;
+                sendButton.classList.add('disabled');
+            }
+        });
+
+        // Send message
+        sendButton.addEventListener('click', sendMessage);
+        messageInput.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' && !sendButton.disabled) {
+                sendMessage();
+            }
+        });
+
+        // Send message function
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            const time = new Date().toLocaleTimeString();
+            if (message) {
+                socket.emit('message_user', { name: userName, message: message, time: time });
+                messageInput.value = '';
+                sendButton.disabled = true;
+                sendButton.classList.add('disabled');
+            }
+        }
+
+        // Receive message
+        socket.on('message', (data) => {
+            const { name, message } = data;
+            const p = document.createElement("p");
+            p.innerHTML = `<strong>${name} : </strong> ${message}`;
+            p.classList.add('server-message');
+            allMessages.appendChild(p);
+            allMessages.scrollTop = allMessages.scrollHeight;
+        });
+    </script>
+</body>
+</html>
