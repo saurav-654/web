@@ -6,18 +6,27 @@
     <link rel="icon" href="favicon.png" type="image/x-icon">
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&display=swap" rel="stylesheet">
     <title>Chat</title>
 </head>
 <body>
     <h1>Chat with me</h1>
 
-    <div id="chat-container">
-        <div id="messages"></div>
-        <div class="input-container">
-            <input type="text" id="message" placeholder="Enter Message"/>
-            <button id="sendbtn" disabled>Send</button>
+    <div id="main-container">
+        <!-- Sidebar to show active users -->
+        <div id="user-list">
+            <h2>Active Users</h2>
+            <ul id="users"></ul>
+        </div>
+
+        <!-- Chat container -->
+        <div id="chat-container">
+            <div id="messages"></div>
+            <div class="input-container">
+                <input type="text" id="message" placeholder="Enter Message"/>
+                <button id="sendbtn" disabled>Send</button>
+            </div>
         </div>
     </div>
 
@@ -27,7 +36,15 @@
         const sendButton = document.getElementById('sendbtn');
         const messageInput = document.getElementById('message');
         const allMessages = document.getElementById('messages');
+        const userList = document.getElementById('users');
         const userName = localStorage.getItem('userName');  // Get username from local storage
+
+        // Notify server of the new user
+        window.onload = function() {
+            if (userName) {
+                socket.emit("new_user", userName);
+            }
+        };
 
         // Enable send button when message is typed
         messageInput.addEventListener('input', function() {
@@ -60,15 +77,45 @@
             }
         }
 
-        // Receive message
+        // Receive and display message
         socket.on('message', (data) => {
             const { name, message } = data;
             const p = document.createElement("p");
-            p.innerHTML = `<strong>${name} : </strong> ${message}`;
+            p.innerHTML = `<strong>${name} :</strong> ${message}`;
             p.classList.add('server-message');
             allMessages.appendChild(p);
             allMessages.scrollTop = allMessages.scrollHeight;
         });
+
+        // Show a notification when a new user joins and update the user list
+        socket.on('user_connected', (data) => {
+            const { name, users } = data;
+            const joinMessage = document.createElement("p");
+            joinMessage.classList.add('notification');
+            joinMessage.textContent = `${name} joined the chat`;
+            allMessages.appendChild(joinMessage);
+            updateUserList(users);
+        });
+
+        // Update the user list when a user disconnects
+        socket.on('user_disconnected', (data) => {
+            const { name, users } = data;
+            const leaveMessage = document.createElement("p");
+            leaveMessage.classList.add('notification');
+            leaveMessage.textContent = `${name} left the chat`;
+            allMessages.appendChild(leaveMessage);
+            updateUserList(users);
+        });
+
+        // Update active user list
+        function updateUserList(users) {
+            userList.innerHTML = ''; // Clear the current user list
+            users.forEach(user => {
+                const li = document.createElement('li');
+                li.textContent = user;
+                userList.appendChild(li);
+            });
+        }
     </script>
 </body>
 </html>
