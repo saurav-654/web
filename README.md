@@ -38,15 +38,7 @@ This is a real-time chat application using **Node.js**, **Express.js**, and **So
    http://localhost:9000
    \`\`\`
 
-## Deployment on Render
-1. Push your code to GitHub.
-2. Create a new **Web Service** on Render.
-3. Link your GitHub repository.
-4. Set the \`Start Command\` as:
-   \`\`\`
-   node server.js
-   \`\`\`
-5. Deploy and access your chat app using the provided URL.
+
 
 ## Project Structure
 \`\`\`
@@ -57,20 +49,8 @@ This is a real-time chat application using **Node.js**, **Express.js**, and **So
 │── README.md         # Documentation
 \`\`\`
 
-## WebSocket Events
-
-### Client to Server
-| Event        | Data Format                    | Description                 |
-|-------------|--------------------------------|-----------------------------|
-| \`new_user\`  | \`{ name: "User Name" }\`        | User joins the chat.        |
-| \`message_user\` | \`{ name, message, time }\` | User sends a chat message.  |
-
-### Server to Client
-| Event             | Data Format                        | Description                  |
-|------------------|----------------------------------|------------------------------|
-| \`user_connected\`  | \`{ name, users: ["User1", ...] }\` | A new user joined.           |
-| \`message\`        | \`{ name, message, time }\`        | Broadcast a chat message.   |
-| \`user_disconnected\` | \`{ name, users: ["User1", ...] }\` | A user left the chat.        |
+![image](https://github.com/user-attachments/assets/7b2bf4ba-2bad-44d5-b137-182c9d27cbf6)
+    |
 
 ## License
 This project is open-source and can be modified and distributed freely.
